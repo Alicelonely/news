@@ -1,0 +1,74 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+<form id="form">
+    用户名:<input type="text" name="username" oninput="searchTxt()" id="name"><span id="msg"></span><br/>
+    密码:<input type="password" name="password" id="pwd"><br/>
+    <input type="button" onclick="isRegister()" value="确定">
+</form>
+
+<script src="js/jquery-3.4.1.min.js"></script>
+<script>
+    let xhr;
+
+    function createXHR() {
+        try{
+            return new XMLHttpRequest();
+
+        }catch (e) {
+            return new ActiveXObject("Microsoft.XMLHTTP");
+        }
+    }
+
+    function searchTxt() {
+        xhr = createXHR();
+        let username = document.getElementById("name").value;
+        xhr.onreadystatechange = callback;
+        xhr.open("POST","SearchTxtServlet",true);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.send("username="+username);
+    }
+
+    function callback() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            var msg = document.getElementById("msg");
+            var result = xhr.responseText.trim();
+            if (result == "false" && result !="") {
+                msg.innerHTML = "用户名已经被使用";
+            } else {
+                msg.innerHTML = "用户名可以注册";
+            }
+
+
+        }
+    }
+
+
+
+
+    function isRegister() {
+        $.ajax({
+            type: "POST",                            //传数据的方式
+            url: "RegisterServlet",                   //servlet地址
+
+            data: $('#form').serialize(),            //传的数据  form表单 里面的数据
+            success: function (result) {                 //传数据成功之后的操作   result是servlet传过来的数据  这个函数对result进行处理，让它显示在 输入框中
+                if (result.trim() == "true") {
+                    alert("注册成功");
+                } else {
+                    alert("注册失败");
+                }
+
+                //找到输入框 并且将result的值 传进去
+
+            }
+        })
+    }
+
+</script>
+</body>
+</html>
